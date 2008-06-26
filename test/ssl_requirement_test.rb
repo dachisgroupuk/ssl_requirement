@@ -204,5 +204,17 @@ class SslRequirementTest < Test::Unit::TestCase
     get :c
     assert_response :success
   end
+
+  def test_disable_ssl_check
+    SslRequirement.disable_ssl_check = true
+
+    assert_not_equal "on", @request.env["HTTPS"]
+    get :a
+    assert_response :success
+    get :b
+    assert_response :success
+  ensure
+    SslRequirement.disable_ssl_check = false
+  end
   
 end

@@ -24,6 +24,14 @@ module SslRequirement
     controller.before_filter(:ensure_proper_protocol)
   end
 
+  def self.disable_ssl_check?
+    @@disable_ssl_check ||= false
+  end
+
+  def self.disable_ssl_check=(value)
+    @@disable_ssl_check = value
+  end
+
   module ClassMethods
     # Specifies that the named actions requires an SSL connection to be performed (which is enforced by ensure_proper_protocol).
     def ssl_required(*actions)
@@ -58,6 +66,7 @@ module SslRequirement
 
   private
     def ensure_proper_protocol
+      return true if SslRequirement.disable_ssl_check?
       return true if ssl_allowed?
 
       if ssl_required? && !request.ssl?
