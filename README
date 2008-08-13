@@ -7,7 +7,7 @@ they should be redirected.
 
 Example:
 
-  class ApplicationController < ActiveRecord::Base
+  class ApplicationController < ActionController::Base
     include SslRequirement
   end
 
