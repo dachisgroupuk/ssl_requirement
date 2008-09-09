@@ -50,7 +50,6 @@ module SslRequirement
   protected
     # Returns true if the current action is supposed to run as SSL
     def ssl_required?
-      return true if %w(development test).include?(RAILS_ENV)
       required = (self.class.read_inheritable_attribute(:ssl_required_actions) || [])
       except  = self.class.read_inheritable_attribute(:ssl_required_except_actions)
 
@@ -62,7 +61,6 @@ module SslRequirement
     end
 
     def ssl_allowed?
-      return false if %w(development test).include?(RAILS_ENV)
       (self.class.read_inheritable_attribute(:ssl_allowed_actions) || []).include?(action_name.to_sym)
     end
 
