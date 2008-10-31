@@ -48,6 +48,27 @@ config.after_initialize do
   SslRequirement.ssl_host = 'secure.example.com'
 end
 
+You are able to turn disable ssl redirects by adding the following environment configuration file:
+  SslRequirement.disable_ssl_check = true
+  
+This plugin also adds a helper called secure_for_tag. The syntax is exactly the same as form_tag except
+it will post to the https version of the url if SslRequirement.disable_ssl_check? returns false. Here is
+an example:
+
+<% secure_form_tag session_path, :class => 'home_login' do -%>
+  <p>
+    <label for="name">Email</label>
+    <%= text_field_tag 'email', '', :class => 'text', :tabindex => 1 %>
+  </p>
+  <p>
+    <label for="password">Password</label>
+    <%= password_field_tag 'password', '', :class => 'text', :tabindex => 2 %>
+  </p>
+  <p>
+    <%= submit_tag "Login", :id => 'login_submit', :value => "", :alt => "Login" %>
+  </p>
+<% end -%>
+
 P.S.: Beware when you include the SslRequirement module. At the time of
 inclusion, it'll add the before_filter that validates the declarations. Some
 times you'll want to run other before_filters before that. They should then be
