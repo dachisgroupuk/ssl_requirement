@@ -51,11 +51,28 @@ end
 You are able to turn disable ssl redirects by adding the following environment configuration file:
   SslRequirement.disable_ssl_check = true
   
-This plugin also adds a helper called secure_for_tag. The syntax is exactly the same as form_tag except
-it will post to the https version of the url if SslRequirement.disable_ssl_check? returns false. Here is
-an example:
+P.S.: Beware when you include the SslRequirement module. At the time of
+inclusion, it'll add the before_filter that validates the declarations. Some
+times you'll want to run other before_filters before that. They should then be
+declared ahead of including this module.
+  
+SSL URL Helper
+==============
+This plugin also adds a helper a :secure option to url_for and named_routes. This property
+allows you to set a url as secure or not secure. It uses the disable_ssl_check to determine
+if the option should be ignored or not so you can develop as normal.
 
-<% secure_form_tag session_path, :class => 'home_login' do -%>
+Here is an example of creating a secure url:
+
+<%= url_for(:controller => "c", :action => "a", :secure => true) %>
+
+If disable_ssl_check returns false url_for will return the following:
+
+https://yoursite.com/c/a
+
+Furthermore, you can use the secure option in a named route to create a secure form as follows:
+
+<% form_tag session_path(:secure => true), :class => 'home_login' do -%>
   <p>
     <label for="name">Email</label>
     <%= text_field_tag 'email', '', :class => 'text', :tabindex => 1 %>
@@ -68,10 +85,5 @@ an example:
     <%= submit_tag "Login", :id => 'login_submit', :value => "", :alt => "Login" %>
   </p>
 <% end -%>
-
-P.S.: Beware when you include the SslRequirement module. At the time of
-inclusion, it'll add the before_filter that validates the declarations. Some
-times you'll want to run other before_filters before that. They should then be
-declared ahead of including this module.
 
 Copyright (c) 2005 David Heinemeier Hansson, released under the MIT license

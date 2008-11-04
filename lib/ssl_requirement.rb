@@ -1,4 +1,4 @@
-require 'form_tag_helper'
+require "#{File.dirname(__FILE__)}/url_rewriter"
 
 # Copyright (c) 2005 David Heinemeier Hansson
 #
