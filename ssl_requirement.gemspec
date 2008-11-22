@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'ssl_requirement'
-  s.version = '1.0.200807044'
+  s.version = '1.0.200807043'
   s.date = '2008-07-04'
 
   s.summary = "Allow controller actions to force SSL on specific parts of the site."
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.files = ["README",
              "init.rb",
              "lib/ssl_requirement.rb",
+             "lib/url_rewriter.rb",
              "rails/init.rb",
              "ssl_requirement.gemspec"]
 
