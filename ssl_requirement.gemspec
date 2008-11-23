@@ -24,5 +24,4 @@ Gem::Specification.new do |s|
              "ssl_requirement.gemspec"]
 
   s.test_files = ["test/ssl_requirement_test.rb"]
-
 end
