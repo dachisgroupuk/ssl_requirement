@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'ssl_requirement'
-  s.version = '1.0.4'
-  s.date = '2008-07-04'
+  s.version = '1.0.5'
+  s.date = '2009-06-22'
 
   s.summary = "Allow controller actions to force SSL on specific parts of the site."
   s.description = "SSL requirement adds a declarative way of specifying that certain actions should only be allowed to run under SSL, and if they're accessed without it, they should be redirected."
