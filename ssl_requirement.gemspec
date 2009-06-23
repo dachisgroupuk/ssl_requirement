@@ -23,5 +23,6 @@ Gem::Specification.new do |s|
              "rails/init.rb",
              "ssl_requirement.gemspec"]
 
-  s.test_files = ["test/ssl_requirement_test.rb"]
+  s.test_files = ["test/ssl_requirement_test.rb",
+                  "test/url_rewriter_test.rb"]
 end
