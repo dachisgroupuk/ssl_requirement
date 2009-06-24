@@ -123,6 +123,8 @@ class SslRequirementTest < ActionController::TestCase
     @ssl_host_override = 'www.example.com:80443'
     @non_ssl_host_override = 'www.example.com:8080'
   end
+
+  # flash-related tests
   
   def test_redirect_to_https_preserves_flash
     assert_not_equal "on", @request.env["HTTPS"]
@@ -163,6 +165,8 @@ class SslRequirementTest < ActionController::TestCase
     assert_response :success        # no redirect
     assert_nil flash[:foo]          # flash should be gone now
   end
+
+  # ssl required/allowed/exceptions testing
   
   def test_required_without_ssl
     assert_not_equal "on", @request.env["HTTPS"]
@@ -190,7 +194,6 @@ class SslRequirementTest < ActionController::TestCase
   
   def test_ssl_exceptions_without_ssl
     @controller = SslExceptionController.new
-
     assert_not_equal "on", @request.env["HTTPS"]
     get :a
     assert_response :redirect
@@ -247,6 +250,51 @@ class SslRequirementTest < ActionController::TestCase
     assert_response :success
   ensure
     SslRequirement.disable_ssl_check = false
+  end
+
+  # testing overriding hostnames for ssl, non-ssl
+
+  # test for overriding (or not) the ssl_host and non_ssl_host variables
+  # using actions a (ssl required) and d (ssl not required or allowed)
+
+  def test_ssl_redirect_with_ssl_host
+    SslRequirement.ssl_host = @ssl_host_override
+    assert_not_equal "on", @request.env["HTTPS"]
+    get :a
+    assert_response :redirect
+    assert_match Regexp.new("^https://#{@ssl_host_override}"),
+                 @response.headers['Location']
+    SslRequirement.ssl_host = nil
+  end
+
+  def test_ssl_redirect_without_ssl_host
+    SslRequirement.ssl_host = nil
+    assert_not_equal "on", @request.env["HTTPS"]
+    get :a
+    assert_response :redirect
+    assert_match Regexp.new("^https://"), @response.headers['Location']
+    assert_no_match Regexp.new("^https://#{@ssl_host_override}"),
+                    @response.headers['Location']
+  end
+
+  def test_non_ssl_redirect_with_non_ssl_host
+    SslRequirement.non_ssl_host = @non_ssl_host_override
+    @request.env['HTTPS'] = 'on'
+    get :d
+    assert_response :redirect
+    assert_match Regexp.new("^http://#{@non_ssl_host_override}"),
+                 @response.headers['Location']
+    SslRequirement.non_ssl_host = nil
+  end
+
+  def test_non_ssl_redirect_without_non_ssl_host
+    SslRequirement.non_ssl_host = nil
+    @request.env['HTTPS'] = 'on'
+    get :d
+    assert_response :redirect
+    assert_match Regexp.new("^http://"), @response.headers['Location']
+    assert_no_match Regexp.new("^http://#{@non_ssl_host_override}"),
+                    @response.headers['Location']
   end
 
 end

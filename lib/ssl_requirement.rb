@@ -21,10 +21,14 @@ require "#{File.dirname(__FILE__)}/url_rewriter"
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module SslRequirement
-  mattr_reader :ssl_host
+  mattr_reader :ssl_host, :non_ssl_host
   
   def self.ssl_host=(host)
     @@ssl_host = host
+  end
+
+  def self.non_ssl_host=(host)
+    @@non_ssl_host = host
   end
   
   def self.included(controller)
@@ -82,7 +86,7 @@ module SslRequirement
         flash.keep
         return false
       elsif request.ssl? && !ssl_required?
-        redirect_to "http://" + request.host + request.request_uri
+        redirect_to "http://" + (non_ssl_host || request.host) + request.request_uri
         flash.keep
         return false
       end

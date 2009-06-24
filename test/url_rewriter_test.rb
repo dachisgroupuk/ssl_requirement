@@ -17,6 +17,12 @@ class UrlRewriterTest < Test::Unit::TestCase
     @request = ActionController::TestRequest.new
     @params = {}
     @rewriter = ActionController::UrlRewriter.new(@request, @params)
+
+    @ssl_host_override = "www.example.com:80443"
+    @non_ssl_host_override = "www.example.com:8090"
+
+    SslRequirement.ssl_host = nil
+    SslRequirement.non_ssl_host = nil
     
     puts @url_rewriter.to_s
   end
@@ -26,8 +32,9 @@ class UrlRewriterTest < Test::Unit::TestCase
     assert_equal('http://test.host/c/a',
       @rewriter.rewrite(:controller => 'c', :action => 'a', :secure => false)
     )
-    assert_equal('http://test.host/c/a',
-      @rewriter.rewrite(:controller => 'c', :action => 'a', :secure => false, :only_path => true)
+    assert_equal('/c/a',
+      @rewriter.rewrite(:controller => 'c', :action => 'a', :secure => false, 
+                        :only_path => true)
     )
     
     SslRequirement.disable_ssl_check = true
@@ -35,7 +42,8 @@ class UrlRewriterTest < Test::Unit::TestCase
       @rewriter.rewrite(:controller => 'c', :action => 'a', :secure => false)
     )
     assert_equal('/c/a',
-      @rewriter.rewrite(:controller => 'c', :action => 'a', :secure => false, :only_path => true)
+      @rewriter.rewrite(:controller => 'c', :action => 'a', :secure => false,
+                        :only_path => true)
     )
   end
   
@@ -74,4 +82,61 @@ class UrlRewriterTest < Test::Unit::TestCase
       @rewriter.rewrite(:controller => 'c', :action => 'a', :only_path => true)
     )
   end
+
+  # tests for ssl_host overriding
+
+  def test_rewrite_secure_with_ssl_host
+    SslRequirement.disable_ssl_check = false
+    SslRequirement.ssl_host = @ssl_host_override
+    assert_equal("https://#{@ssl_host_override}/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a', 
+                                   :secure => true))
+    assert_equal("https://#{@ssl_host_override}/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a', 
+                                   :secure => true, :only_path => true))
+    SslRequirement.ssl_host = nil
+  end
+
+  def test_rewrite_non_secure_with_non_ssl_host
+    SslRequirement.disable_ssl_check = false
+    SslRequirement.non_ssl_host = @non_ssl_host_override
+
+    # with secure option
+    assert_equal("http://#{@non_ssl_host_override}/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a',
+                                   :secure => false))
+    assert_equal("/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a', 
+                                   :secure => false, :only_path => true))
+
+    # without secure option
+    assert_equal("http://#{@non_ssl_host_override}/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a'))
+    assert_equal("/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a', 
+                                   :only_path => true))
+    SslRequirement.non_ssl_host = nil
+  end
+
+  def test_rewrite_non_secure_with_non_ssl_host_disable_check
+    SslRequirement.disable_ssl_check = true
+    SslRequirement.non_ssl_host = @non_ssl_host_override
+
+    # with secure option
+    assert_equal("http://#{@non_ssl_host_override}/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a',
+                                   :secure => false))
+    assert_equal("/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a', 
+                                   :secure => false, :only_path => true))
+
+    # without secure option
+    assert_equal("http://#{@non_ssl_host_override}/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a'))
+    assert_equal("/c/a",
+                 @rewriter.rewrite(:controller => 'c', :action => 'a', 
+                                   :only_path => true))
+    SslRequirement.non_ssl_host = nil
+  end
+
 end
