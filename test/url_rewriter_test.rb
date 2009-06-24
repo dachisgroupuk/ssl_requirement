@@ -19,7 +19,7 @@ class UrlRewriterTest < Test::Unit::TestCase
     @rewriter = ActionController::UrlRewriter.new(@request, @params)
 
     @ssl_host_override = "www.example.com:80443"
-    @non_ssl_host_override = "www.example.com:8090"
+    @non_ssl_host_override = "www.example.com:8080"
 
     SslRequirement.ssl_host = nil
     SslRequirement.non_ssl_host = nil
@@ -92,7 +92,7 @@ class UrlRewriterTest < Test::Unit::TestCase
                  @rewriter.rewrite(:controller => 'c', :action => 'a', 
                                    :secure => true))
     assert_equal("https://#{@ssl_host_override}/c/a",
-                 @rewriter.rewrite(:controller => 'c', :action => 'a', 
+                 @rewriter.rewrite(:controller => 'c', :action => 'a',
                                    :secure => true, :only_path => true))
     SslRequirement.ssl_host = nil
   end

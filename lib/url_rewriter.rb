@@ -6,6 +6,8 @@ module ActionController
     # Add a secure option to the rewrite method.
     def rewrite_with_secure_option(options = {})
       secure = options.delete(:secure)
+
+      # if secure && ssl check is not disabled, convert to full url with https
       if !secure.nil? && !SslRequirement.disable_ssl_check?
         if secure == true || secure == 1 || secure.to_s.downcase == "true"
           options.merge!({
@@ -32,12 +34,12 @@ module ActionController
     # if full URL is requested for http and we've been told to use a
     # non-ssl host override, then use it
     def rewrite_with_non_ssl_host(options)
-      if (options[:only_path].nil? || options[:only_path] == false) &&
-            !SslRequirement.non_ssl_host.nil? &&
-            (options[:protocol] || @request.protocol).match('http[^s]?')
-        options.merge! :host => SslRequirement.non_ssl_host
+      if !options[:only_path] && !SslRequirement.non_ssl_host.nil?
+        host = options[:protocol] || @request.protocol
+        if !(/^https/ =~ host)
+          options.merge! :host => SslRequirement.non_ssl_host
+        end
       end
-
       rewrite_without_non_ssl_host(options)
     end
 

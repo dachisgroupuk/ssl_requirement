@@ -48,6 +48,15 @@ config.after_initialize do
   SslRequirement.ssl_host = 'secure.example.com'
 end
 
+For non-SSL domains that differ from domain of redirecting site, add the
+following code to development.rb / test.rb / production.rb:
+
+# Redirects to http://nonsecure.example.com instead of the default 
+# http://www.example.com.
+config.after_initialize do
+  SslRequirement.non_ssl_host = 'nonsecure.example.com'
+end
+
 You are able to turn disable ssl redirects by adding the following environment configuration file:
   SslRequirement.disable_ssl_check = true
   
@@ -60,7 +69,9 @@ SSL URL Helper
 ==============
 This plugin also adds a helper a :secure option to url_for and named_routes. This property
 allows you to set a url as secure or not secure. It uses the disable_ssl_check to determine
-if the option should be ignored or not so you can develop as normal.
+if the option should be ignored or not so you can develop as normal. It also
+will obey if you override SslRequirement.ssl_host or 
+SslRequirement.non_ssl_host (see above)
 
 Here is an example of creating a secure url:
 

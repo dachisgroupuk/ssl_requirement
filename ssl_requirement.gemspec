@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--main", "README"]
   s.extra_rdoc_files = ["README"]
 
-  s.add_dependency 'rails', ['>= 2.1']
+  s.add_dependency 'rails', ['>= 2.3.2']
 
   s.files = ["README",
              "init.rb",

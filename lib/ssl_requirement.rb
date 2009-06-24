@@ -21,15 +21,7 @@ require "#{File.dirname(__FILE__)}/url_rewriter"
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module SslRequirement
-  mattr_reader :ssl_host, :non_ssl_host
-  
-  def self.ssl_host=(host)
-    @@ssl_host = host
-  end
-
-  def self.non_ssl_host=(host)
-    @@non_ssl_host = host
-  end
+  mattr_accessor :ssl_host, :non_ssl_host
   
   def self.included(controller)
     controller.extend(ClassMethods)
