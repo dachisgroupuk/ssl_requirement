@@ -35,8 +35,7 @@ module ActionController
     # non-ssl host override, then use it
     def rewrite_with_non_ssl_host(options)
       if !options[:only_path] && !SslRequirement.non_ssl_host.nil?
-        host = options[:protocol] || @request.protocol
-        if !(/^https/ =~ host)
+        if !(/^https/ =~ (options[:protocol] || @request.protocol))
           options.merge! :host => SslRequirement.non_ssl_host
         end
       end
